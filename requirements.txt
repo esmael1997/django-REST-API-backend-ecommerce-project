@@ -1,0 +1,9 @@
+# main modules
+
+django>=5.2,<5.3
+
+# database
+psycopg2-binary
+
+
+
