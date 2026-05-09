@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from django.core.mail import EmailMessage
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
@@ -138,3 +140,28 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#from decouple import config
+
+#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+#EMAIL_HOST = "smtp4dev"
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+
+#EMAIL_HOST_USER = "esmaelhooseiny1997@gmail.com"
+#EMAIL_HOST_PASSWORD = "xijlhtspvblzflkx"
+
+#DEFAULT_FROM_EMAIL = "test@local.dev"
+
+#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+#EMAIL_HOST = "smtp.gmail.com"
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+
+##EMAIL_HOST_USER = "esmaelhooseiny1997@gmail.com"
+#EMAIL_HOST_PASSWORD = "xijlhtspvblzflkx"
+
+#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
