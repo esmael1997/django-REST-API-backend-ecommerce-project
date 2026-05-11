@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import User
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -15,3 +17,14 @@ class LoginForm(forms.Form):
         })
     )
     
+class RegisterForm(UserCreationForm):
+    
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'username',
+            'password1',
+            'password2',
+        )
+        
