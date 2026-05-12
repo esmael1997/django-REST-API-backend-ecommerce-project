@@ -143,8 +143,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #from decouple import config
 
-#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
 #EMAIL_HOST = "smtp4dev"
 #EMAIL_PORT = 587
 #EMAIL_USE_TLS = True
@@ -154,10 +152,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #DEFAULT_FROM_EMAIL = "test@local.dev"
 
-#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "mailhog"
+EMAIL_PORT = 1025
+EMAIL_BACKEND = "apps.accounts.email_backend.CeleryEmailBackend"
 
-#EMAIL_HOST = "smtp.gmail.com"
-#EMAIL_PORT = 587
+
 #EMAIL_USE_TLS = True
 
 ##EMAIL_HOST_USER = "esmaelhooseiny1997@gmail.com"
@@ -168,4 +167,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = '/accounts/login/'
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
 
