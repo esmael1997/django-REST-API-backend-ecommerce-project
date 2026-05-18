@@ -18,8 +18,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm
+#from .tasks import send_reset_email
 
-from .tasks import send_reset_email
 
 
 class CustomPasswordResetView(PasswordResetView):
@@ -68,7 +68,7 @@ This link is valid for 48 hours.
 """
 
             # async email via celery
-            send_reset_email.delay(subject, message, user_email)
+            #send_reset_email.delay(subject, message, user_email)
 
         return super().form_valid(form)
     

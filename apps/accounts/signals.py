@@ -9,6 +9,6 @@ User = get_user_model()
 def assign_default_role(sender, instance, created, **kwargs):
     
     if created:
-        default_group = Group.objects.get(name="User")
+        group, created_group = Group.objects.get_or_create(name="User")
         
-        instance.groups.add(default_group)
+        instance.groups.add(group)

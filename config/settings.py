@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.accounts',
+    'shop',
 ]
 
 MIDDLEWARE = [
@@ -77,13 +78,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("PGDB_NAME", default='mydb'),
-        'USER': config("PGDB_NAME",default='postgres'),
-        'PASSWORD': config("PGDB_PASSWORD",default='postgres'),
-        'HOST': config("PGDB_HOST",default='db'),
-        'PORT': config("PGDB_PORT",cast=int,default='5432'),
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -154,7 +151,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_HOST = "mailhog"
 EMAIL_PORT = 1025
-EMAIL_BACKEND = "apps.accounts.email_backend.CeleryEmailBackend"
+#EMAIL_BACKEND = "apps.accounts.email_backend.CeleryEmailBackend"
+EMAIL_BACKEND = "apps.accounts.backends.CeleryEmailBackend"
 
 
 #EMAIL_USE_TLS = True
@@ -168,11 +166,11 @@ AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = '/accounts/login/'
 
-CELERY_BROKER_URL = "redis://redis:6379/0"
-CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+#CELERY_BROKER_URL = "redis://redis:6379/0"
+#CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_TIMEZONE = "UTC"
+#CELERY_ACCEPT_CONTENT = ["json"]
+#CELERY_TASK_SERIALIZER = "json"
+#CELERY_TIMEZONE = "UTC"
 
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 48  # 48 hours

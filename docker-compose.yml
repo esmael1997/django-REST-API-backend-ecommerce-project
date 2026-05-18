@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   db:
@@ -47,16 +47,16 @@ services:
       - ServerOptions__Urls=http://*:80
       - ServerOptions__HostName=smtp4dev
 
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "1025:1025"
-      - "8025:8025"
+  #mailhog:
+    #image: mailhog/mailhog
+    #ports:
+      #- "1025:1025"
+      #- "8025:8025"
 
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
+  #redis:
+    #image: redis:7
+    #ports:
+      #- "6379:6379"
 
 volumes:
   postgres_data:
