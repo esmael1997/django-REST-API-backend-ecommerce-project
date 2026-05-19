@@ -11,7 +11,11 @@
 
     {% for product in products %}
     <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-        <h2>{{ product.title }}</h2>
+        <h2>
+            <a href="{{ product.get_absolute_url }}">
+                {{ product.title }}
+            </a>
+        </h2>
         <p>{{ product.price }} $</p>
         <p>{{ product.category.name }}</p>
     </div>
