@@ -9,6 +9,24 @@ def product_list(request, slug=None):
     products = Product.objects.filter(available=True)
     query = request.GET.get("query")
     
+    query = request.GET.get("query")
+
+min_price = request.GET.get("min_price")
+
+max_price = request.GET.get("max_price")
+
+
+if query:
+    products = products.filter(title__icontains=query)
+
+
+if min_price:
+    products = products.filter(price__gte=min_price)
+
+
+if max_price:
+    products = products.filter(price__lte=max_price)
+    
     if query:
         products = products.filter(title__icontains=query)
 
@@ -18,7 +36,7 @@ def product_list(request, slug=None):
 
     page_obj = paginator.get_page(page_number)
     
-    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,}
+    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,"min_price": min_price,"max_price": max_price,}
     
     return render(request, "shop/product_list.html", context,)
 
@@ -26,7 +44,7 @@ def product_list(request, slug=None):
     if slug:
         category = get_object_or_404(Category, slug=slug)
         products = products.filter(category=category)
-    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,}
+    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,"min_price": min_price,"max_price": max_price,"min_price": min_price,"max_price": max_price,}
     return render(request, "shop/product_list.html", context)
 
 def product_detail(request, id, slug):
@@ -39,3 +57,4 @@ def product_detail(request, id, slug):
     page_obj = paginator.get_page(page_number)
     context = {"products": page_obj,"page_obj": page_obj,}
     return render(request, "shop/product_detail.html", context,)
+

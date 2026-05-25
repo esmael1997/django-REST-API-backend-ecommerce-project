@@ -88,6 +88,24 @@
 
             {% endif %}
 
+            <form method="GET">
+
+                <input type="number" name="min_price" placeholder="Min Price" value="{{ min_price }}">
+
+                <input type="number" name="max_price" placeholder="Max Price" value="{{ max_price }}">
+
+                {% if query %}
+                <input type="hidden" name="query" value="{{ query }}">
+                {% endif %}
+
+                <button type="submit">
+                    Filter
+                </button>
+
+            </form>
+
+            <hr>
+
             {% endif %}
 
         </div>
