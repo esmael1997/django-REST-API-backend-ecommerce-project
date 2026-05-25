@@ -1,60 +1,12 @@
-from urllib import request
-from django.core import paginator
-from django.shortcuts import render, get_object_or_404
-from .models import Product, Category
-from django.core.paginator import Paginator
-
-def product_list(request, slug=None):
-    category = None
-    products = Product.objects.filter(available=True)
-    query = request.GET.get("query")
-    
-    query = request.GET.get("query")
-
-min_price = request.GET.get("min_price")
-
-max_price = request.GET.get("max_price")
+from django.shortcuts import render
+from shop.services.product_service import list_products, retrieve_product
 
 
-if query:
-    products = products.filter(title__icontains=query)
+def product_list(request):
+    products = list_products()
+    return render(request, "shop/product_list.html", {"products": products})
 
-
-if min_price:
-    products = products.filter(price__gte=min_price)
-
-
-if max_price:
-    products = products.filter(price__lte=max_price)
-    
-    if query:
-        products = products.filter(title__icontains=query)
-
-    paginator = Paginator(products, 3)
-
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
-    
-    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,"min_price": min_price,"max_price": max_price,}
-    
-    return render(request, "shop/product_list.html", context,)
-
-
-    if slug:
-        category = get_object_or_404(Category, slug=slug)
-        products = products.filter(category=category)
-    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,"min_price": min_price,"max_price": max_price,"min_price": min_price,"max_price": max_price,}
-    return render(request, "shop/product_list.html", context)
 
 def product_detail(request, id, slug):
-    products = Product.objects.filter(available=True)
-
-    paginator = Paginator(products, 3)
-
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
-    context = {"products": page_obj,"page_obj": page_obj,}
-    return render(request, "shop/product_detail.html", context,)
-
+    product = retrieve_product(id, slug)
+    return render(request, "shop/product_detail.html", {"product": product})
