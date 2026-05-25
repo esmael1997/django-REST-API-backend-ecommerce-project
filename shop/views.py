@@ -26,7 +26,7 @@ def product_list(request, slug=None):
     if slug:
         category = get_object_or_404(Category, slug=slug)
         products = products.filter(category=category)
-    context = {"category":category,"products": page_obj,"page_obj": page_obj,}
+    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,}
     return render(request, "shop/product_list.html", context)
 
 def product_detail(request, id, slug):

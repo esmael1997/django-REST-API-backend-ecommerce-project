@@ -16,22 +16,81 @@
     {% endif %}
 
     <span>
-        Page {{ page_obj.number }}
-        of
-        {{ page_obj.paginator.num_pages }}
-    </span>
+        <hr>
 
-    {% if page_obj.has_next %}
+        <div>
 
-    <a href="?query={{ query }}&page={{ page_obj.next_page_number }}">
-        Next
-    </a>
+            {% if category %}
 
-    <a href="?query={{ query }}&page={{ page_obj.paginator.num_pages }}">
-        Last
-    </a>
+            {% with category.slug as category_slug %}
 
-    {% endif %}
+            {% if page_obj.has_previous %}
+
+            <a href="/category/{{ category_slug }}/?query={{ query }}&page=1">
+                First
+            </a>
+
+            <a href="/category/{{ category_slug }}/?query={{ query }}&page={{ page_obj.previous_page_number }}">
+                Previous
+            </a>
+
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }}
+                of
+                {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+
+            <a href="/category/{{ category_slug }}/?query={{ query }}&page={{ page_obj.next_page_number }}">
+                Next
+            </a>
+
+            <a href="/category/{{ category_slug }}/?query={{ query }}&page={{ page_obj.paginator.num_pages }}">
+                Last
+            </a>
+
+            {% endif %}
+
+            {% endwith %}
+
+            {% else %}
+
+            {% if page_obj.has_previous %}
+
+            <a href="?query={{ query }}&page=1">
+                First
+            </a>
+
+            <a href="?query={{ query }}&page={{ page_obj.previous_page_number }}">
+                Previous
+            </a>
+
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }}
+                of
+                {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+
+            <a href="?query={{ query }}&page={{ page_obj.next_page_number }}">
+                Next
+            </a>
+
+            <a href="?query={{ query }}&page={{ page_obj.paginator.num_pages }}">
+                Last
+            </a>
+
+            {% endif %}
+
+            {% endif %}
+
+        </div>
 
 </div>
 <html>
