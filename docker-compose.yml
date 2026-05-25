@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   db:
@@ -20,11 +20,13 @@ services:
       context: .
       dockerfile: ./dockerfiles/django/Dockerfile
     volumes:
-      - ./core:/usr/src/app
+      - .:/usr/src/app
     working_dir: /usr/src/app
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
+    env_file:
+    - .env
     environment:
       - DEBUG=TRUE
     depends_on:
@@ -44,6 +46,17 @@ services:
     environment:
       - ServerOptions__Urls=http://*:80
       - ServerOptions__HostName=smtp4dev
+
+  #mailhog:
+    #image: mailhog/mailhog
+    #ports:
+      #- "1025:1025"
+      #- "8025:8025"
+
+  #redis:
+    #image: redis:7
+    #ports:
+      #- "6379:6379"
 
 volumes:
   postgres_data:
