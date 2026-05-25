@@ -7,12 +7,20 @@ from django.core.paginator import Paginator
 def product_list(request, slug=None):
     category = None
     products = Product.objects.filter(available=True)
+    query = request.GET.get("query")
+    
+    if query:
+        products = products.filter(title__icontains=query)
 
     paginator = Paginator(products, 3)
 
     page_number = request.GET.get("page")
 
     page_obj = paginator.get_page(page_number)
+    
+    context = {"category":category,"products": page_obj,"page_obj": page_obj,"query": query,}
+    
+    return render(request, "shop/product_list.html", context,)
 
 
     if slug:
