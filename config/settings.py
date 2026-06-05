@@ -43,7 +43,18 @@ INSTALLED_APPS = [
     'rest_framework',
     'apps.accounts',
     'shop',
+    "django_filters",
 ]
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ],
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -139,39 +150,20 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#from decouple import config
 
-#EMAIL_HOST = "smtp4dev"
-#EMAIL_PORT = 587
-#EMAIL_USE_TLS = True
-
-#EMAIL_HOST_USER = "esmaelhooseiny1997@gmail.com"
-#EMAIL_HOST_PASSWORD = "xijlhtspvblzflkx"
-
-#DEFAULT_FROM_EMAIL = "test@local.dev"
 
 EMAIL_HOST = "mailhog"
 EMAIL_PORT = 1025
-#EMAIL_BACKEND = "apps.accounts.email_backend.CeleryEmailBackend"
 EMAIL_BACKEND = "apps.accounts.backends.CeleryEmailBackend"
 
 
-#EMAIL_USE_TLS = True
-
-##EMAIL_HOST_USER = "esmaelhooseiny1997@gmail.com"
-#EMAIL_HOST_PASSWORD = "xijlhtspvblzflkx"
-
-#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = '/accounts/login/'
 
-#CELERY_BROKER_URL = "redis://redis:6379/0"
-#CELERY_RESULT_BACKEND = "redis://redis:6379/0"
-
-#CELERY_ACCEPT_CONTENT = ["json"]
-#CELERY_TASK_SERIALIZER = "json"
-#CELERY_TIMEZONE = "UTC"
 
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 48  # 48 hours
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"

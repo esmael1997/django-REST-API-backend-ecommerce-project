@@ -1,7 +1,7 @@
-from shop.selectors.product_selector import (get_available_products,get_product_by_id_and_slug)
+from shop.selectors.product_selector import (get_product_by_id_and_slug, get_products)
 
 def list_products():
-    return get_available_products()
+    return get_products()
 
 
 def retrieve_product(id, slug):
