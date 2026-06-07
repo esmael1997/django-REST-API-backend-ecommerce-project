@@ -51,7 +51,9 @@ class Profile(models.Model):
 
     national_id = models.CharField(
         max_length=10,
-        validators=[national_id_validator]
+        validators=[national_id_validator],
+        blank=True,
+        null=True
     )
 
     bio = models.TextField(blank=True, null=True)
