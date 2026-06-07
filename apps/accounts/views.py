@@ -1,213 +1,125 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from django.views.generic import FormView
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.models import Group
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 from django.core.cache import cache
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
-from functools import wraps
-from django.contrib.auth.models import Group
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils.http import url_has_allowed_host_and_scheme
 from .forms import LoginForm, RegisterForm
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import SetPasswordForm
-#from .tasks import send_reset_email
+
+from .services.auth_service import AuthService
+
+User = get_user_model()
 
 
+class PasswordResetRequestAPIView(APIView):
 
-class CustomPasswordResetView(PasswordResetView):
+    def post(self, request):
+        email = request.data.get("email")
+        ip = request.META.get("REMOTE_ADDR")
 
-    template_name = "accounts/password_reset.html"
-    email_template_name = "accounts/email/password_reset_email.html"
-    success_url = "/password-reset/done/"
+        if not email:
+            return Response({"error": "Email is required"}, status=400)
 
-    def form_valid(self, form):
-
-        user_email = form.cleaned_data["email"]
-        ip = self.request.META.get("REMOTE_ADDR")
-
-        # rate limit (anti spam)
-        cache_key = f"reset-{ip}-{user_email}"
-
+        # anti-spam rate limit
+        cache_key = f"reset-{ip}-{email}"
         if cache.get(cache_key):
-            messages.error(self.request, "Too many requests. Try later.")
-            return redirect("password_reset")
+            return Response({"error": "Too many requests"}, status=429)
 
         cache.set(cache_key, True, timeout=60)
 
-        # user queryset (safe)
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-
-        users = User.objects.filter(email=user_email, is_active=True)
+        users = User.objects.filter(email=email, is_active=True)
 
         for user in users:
-
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-            reset_link = f"http://localhost:8000/reset/{uid}/{token}/"
+            reset_link = f"http://localhost:3000/reset-password?uid={uid}&token={token}"
 
-            subject = "Password Reset Request"
+            # TODO: Celery task
+            # send_reset_email.delay(user.email, reset_link)
 
-            message = f"""
-Hello {user.username},
-
-Click below link to reset your password:
-
-{reset_link}
-
-This link is valid for 48 hours.
-"""
-
-            # async email via celery
-            #send_reset_email.delay(subject, message, user_email)
-
-        return super().form_valid(form)
+        return Response({"message": "If user exists, email sent"}, status=200)
     
+class PasswordResetConfirmAPIView(APIView):
 
-# Decorator: prevent logged-in users
+    def post(self, request):
+        uidb64 = request.data.get("uid")
+        token = request.data.get("token")
+        new_password = request.data.get("new_password")
 
-def anonymous_required(view_func):
+        if not uidb64 or not token or not new_password:
+            return Response({"error": "Missing fields"}, status=400)
 
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
+        # decode uid
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except Exception:
+            return Response({"error": "Invalid UID"}, status=400)
 
-        if request.user.is_authenticated:
-            return redirect("home")
+        # validate token
+        if not default_token_generator.check_token(user, token):
+            return Response({"error": "Invalid or expired token"}, status=400)
 
-        return view_func(request, *args, **kwargs)
+        # password strength check
+        try:
+            validate_password(new_password, user)
+        except Exception as e:
+            return Response({"error": e.messages}, status=400)
 
-    return wrapper
+        # set password
+        user.set_password(new_password)
+        user.save()
 
-
-# LOGIN
-
-def login_view(request):
-
-    if request.user.is_authenticated:
-        return redirect("home")
-
-    form = LoginForm(request.POST or None)
-
-    next_url = request.POST.get("next") or request.GET.get("next")
-
-    if request.method == "POST":
-
-        if form.is_valid():
-
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-
-            user = authenticate(
-                request,
-                username=username,
-                password=password
-            )
-
-            if user is not None:
-
-                login(request, user)
-                messages.success(request, "Login successful")
-
-                if next_url and url_has_allowed_host_and_scheme(
-                    next_url,
-                    allowed_hosts={request.get_host()},
-                    require_https=request.is_secure(),
-                ):
-                    return redirect(next_url)
-
-                return redirect("home")
-
-            messages.error(request, "Invalid credentials")
-
-    return render(request, "apps/accounts/login.html", {
-        "form": form,
-        "next": next_url
-    })
+        return Response({"message": "Password reset successful"}, status=200)
     
+class LoginAPIView(APIView):
+
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is None:
+            return Response({"error": "Invalid credentials"}, status=400)
+
+        login(request, user)
+
+        return Response({"message": "Login successful"}, status=200)
     
+class RegisterAPIView(APIView):
 
+    def post(self, request):
+        username = request.data.get("username")
+        email = request.data.get("email")
+        password = request.data.get("password")
 
-# REGISTER
+        if not all([username, email ,password]):
+            return Response({"error": "Missing fields"}, status=400)
 
-def register_view(request):
-
-    form = RegisterForm(request.POST or None)
-
-    if request.method == "POST":
-
-        if form.is_valid():
-
-            user = form.save()
-
-            # assign default role
-            group = Group.objects.get(name="customer")
-            user.groups.add(group)
-
-            login(request, user)
-
-            return redirect("home")
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
         
-def is_admin(user):
-    return user.groups.filter(name="admin").exists()
+        # assign role
+        group, _ = Group.objects.get_or_create(name="customer")
+        user.groups.add(group)
 
+        return Response({"message": "User created"}, status=201)
+    
+class LogoutAPIView(APIView):
 
-# LOGOUT
-
-@require_POST
-def logout_view(request):
-
-    logout(request)
-    messages.success(request, "You have been logged out successfully")
-
-    return redirect("login")
-
-
-def password_reset_confirm(request, uidb64, token):
-
-    User = get_user_model()
-
-    try:
-        uid = urlsafe_base64_decode(uidb64).decode()
-        user = User.objects.get(pk=uid)
-
-    except:
-        user = None
-
-    if user is None or not default_token_generator.check_token(user, token):
-        return render(request, "accounts/password_reset_invalid.html")
-
-    if request.method == "POST":
-
-        form = SetPasswordForm(user, request.POST)
-
-        if form.is_valid():
-            form.save()
-            return redirect("login")
-
-    else:
-        form = SetPasswordForm(user)
-
-    return render(request, "accounts/password_reset_confirm.html", {
-        "form": form
-    })
-
-
-
-# CBV PAGES
-
-class IndexView(TemplateView):
-    template_name = "apps/accounts/index.html"
-
-
-class ProfileView(LoginRequiredMixin, TemplateView):
-    template_name = "apps/accounts/profile.html"
-    login_url = "login"
+    def post(self, request):
+        logout(request)
+        return Response({"message": "Logged out"}, status=200)
+    

@@ -163,7 +163,7 @@ AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = '/accounts/login/'
 
 
-PASSWORD_RESET_TIMEOUT = 60 * 60 * 48  # 48 hours
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # 24 hours
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
