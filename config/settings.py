@@ -13,6 +13,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from decouple import config
 from django.core.mail import EmailMessage
+import environ
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -53,6 +60,12 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "password_reset": "5/hour",
+    },
 }
 
 
@@ -143,27 +156,23 @@ STATICFILES_DIRS = [
 
 
 
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
 EMAIL_HOST = "mailhog"
 EMAIL_PORT = 1025
 EMAIL_BACKEND = "apps.accounts.backends.CeleryEmailBackend"
-
-
 
 AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = '/accounts/login/'
 
-
-PASSWORD_RESET_TIMEOUT = 60 * 60 * 24  # 24 hours
+PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
