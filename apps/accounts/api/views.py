@@ -24,3 +24,5 @@ class PasswordResetRequestAPIView(APIView):
             create_password_reset(user)
 
         return Response({"message": "If this email exists, reset link has been sent."},status=status.HTTP_200_OK)
+    
+class PasswordResetConfirmAPIView(APIView):

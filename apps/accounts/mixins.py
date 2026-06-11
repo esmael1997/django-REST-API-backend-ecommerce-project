@@ -23,28 +23,6 @@ def create_roles():
     for role in roles:
         Group.objects.get_or_create(name=role)
 
-'''
-class StaffRequiredMixin(AccessMixin):
-    
-    def dispatch(self, request, *args, **kwargs):
-        
-        if (request.user.is_authenticated and request.user.groups.filter(name="Staff").exists()):
-            
-            return super().dispatch(request, *args, **kwargs)
-        
-        raise PermissionDenied
-    
-class AdminRequiredMixin(AccessMixin):
-    
-    def dispatch(self, request, *args, **kwargs):
-        
-        if(request.user.is_authenticated and request.user.groups.filter(name="Admin").exists()):
-            
-            return super().dispatch(request, *args, **kwargs)
-        
-        raise PermissionDenied
-        
-'''
     
 def assign_role(user, role_name: str):
     group = Group.objects.get(name=role_name)

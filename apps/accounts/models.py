@@ -1,15 +1,16 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from apps.accounts.validators import (
-    phone_validator,
-    national_id_validator,
-    name_validator,
-)
+from apps.accounts.validators import (phone_validator,national_id_validator,name_validator,)
 
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    
+    password_reset_sent_at = models.DateTimeField(blank=True, null=True)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     class Meta:
         verbose_name = 'User'
