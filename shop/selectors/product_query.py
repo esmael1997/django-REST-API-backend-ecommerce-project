@@ -14,8 +14,13 @@ def get_products(query_params=None) -> QuerySet:
 
     if not query_params:
         return qs
+    
+    print("TYPE:", type(query_params))
+    print("VALUE:", query_params)
 
     # search layer
+    print(type(query_params))
+    print(query_params)
     qs = search_products(qs, query_params.get("search"))
 
     # price filter layer
