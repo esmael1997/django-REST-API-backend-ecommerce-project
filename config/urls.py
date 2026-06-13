@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 
+
 urlpatterns = [
-    path("api/v1/", include("shop.api.v1.urls")),
-    path('admin/', admin.site.urls),
-    #path('',include('apps.accounts.api.urls')),
-    path('',include('shop.urls')),
+    path("shop/api/v1/", include("shop.api.v1.urls")),
+    path("cart/api/v1/", include("cart.api.v1.urls")),
+    path("admin/", admin.site.urls),
 ]

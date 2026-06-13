@@ -1,10 +1,9 @@
 from django.db import models
 from django.urls import reverse
+import uuid
+from django.db import models
 
 
-# ----------------------------
-# CATEGORY (OK - CLEAN)
-# ----------------------------
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
@@ -23,9 +22,6 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
-import uuid
-from django.db import models
-
 
 class Product(models.Model):
 
