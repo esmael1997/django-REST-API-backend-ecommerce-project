@@ -13,7 +13,7 @@ from rest_framework import status
 from django.utils.http import url_has_allowed_host_and_scheme
 from .forms import LoginForm, RegisterForm
 
-from .services.auth_service import AuthService
+from apps.accounts.services.auth_service import AuthService
 
 User = get_user_model()
 

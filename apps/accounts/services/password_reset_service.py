@@ -3,8 +3,8 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from accounts.utils.tokens import token_generator
-from accounts.tasks.email_tasks import send_password_reset_email_task
+from apps.accounts.utils.tokens import token_generator
+from apps.accounts.tasks.emailtasks import send_password_reset_email_task
 
 
 User = get_user_model()
