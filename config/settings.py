@@ -15,6 +15,7 @@ from decouple import config
 from django.core.mail import EmailMessage
 import environ
 from pathlib import Path
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,7 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7i!&j97%cl*@tfx!nhc*cww52$tk%i+ny#23)0$808^pugzjxg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config ("DEBUG",cast=bool,default=True)
+DEBUG = True    #config ("DEBUG",cast=bool,default=True)
 
 ALLOWED_HOSTS = config ("ALLOWED_HOSTS",cast = lambda v: [item.strip() for item in v.split(',')], default="*")
 
@@ -51,24 +52,36 @@ INSTALLED_APPS = [
     'apps.accounts',
     'shop',
     "django_filters",
-    "cart"
+    "cart",
+    'rest_framework_simplejwt.token_blacklist',
     
 ]
 
 
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "core.exceptions.handler.custom_exception_handler",
-    "DEFAULT_FILTER_BACKENDS": [
-        "django_filters.rest_framework.DjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
-        "rest_framework.filters.OrderingFilter",
-    ],
-    "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.ScopedRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
-        "password_reset": "5/hour",
-    },
+        "DEFAULT_FILTER_BACKENDS": [
+            "django_filters.rest_framework.DjangoFilterBackend",
+            "rest_framework.filters.SearchFilter",
+            "rest_framework.filters.OrderingFilter",
+        ],
+        "DEFAULT_THROTTLE_CLASSES": [
+            "rest_framework.throttling.ScopedRateThrottle",
+        ],
+        "DEFAULT_THROTTLE_RATES": {
+            "password_reset": "5/hour",
+        },
+        "DEFAULT_AUTHENTICATION_CLASSES": (
+            "rest_framework_simplejwt.authentication.JWTAuthentication",
+        ),
+    
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }
 
 

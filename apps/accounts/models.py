@@ -65,5 +65,8 @@ class Profile(models.Model):
         verbose_name = 'Profile'
         verbose_name_plural = 'Profiles'
 
-    def __str__(self):
+def __str__(self):
+    if self.full_name:
         return self.full_name
+
+    return self.user.email
