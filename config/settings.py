@@ -174,8 +174,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 EMAIL_HOST = "mailhog"
+#EMAIL_HOST = "localhost"
 EMAIL_PORT = 1025
 EMAIL_BACKEND = "apps.accounts.backends.CeleryEmailBackend"
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTH_USER_MODEL = 'accounts.User'
 

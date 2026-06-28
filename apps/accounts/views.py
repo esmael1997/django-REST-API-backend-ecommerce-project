@@ -17,6 +17,7 @@ from apps.accounts.services.auth_service import AuthService
 
 User = get_user_model()
 
+
 throttle_scope = "password_reset"
 
 

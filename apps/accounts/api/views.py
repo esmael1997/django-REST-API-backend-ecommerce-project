@@ -7,10 +7,18 @@ from apps.accounts.api.serializers import (
     PasswordResetRequestSerializer,
     RegisterSerializer,
     LoginSerializer,
+    LogoutSerializer,
+    PasswordResetConfirmSerializer
 )
 from apps.accounts.services.auth_service import AuthService
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
+from apps.accounts.api.serializers import CurrentUserSerializer
+
 
 User = get_user_model()
+
 
 class PasswordResetRequestAPIView(APIView):
 
@@ -19,7 +27,6 @@ class PasswordResetRequestAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         email = serializer.validated_data["email"]
-
         user = User.objects.filter(email=email).first()
 
        
@@ -29,19 +36,31 @@ class PasswordResetRequestAPIView(APIView):
         return Response({"message": "If this email exists, reset link has been sent."},status=status.HTTP_200_OK)
     
 class PasswordResetConfirmAPIView(APIView):
-    pass
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        confirm_password_reset(
+            uidb64=serializer.validated_data["uid"],
+            token=serializer.validated_data["token"],
+            new_password=serializer.validated_data["new_password"],
+        )
+
+        return Response(
+            {
+                "message": "Password reset successfully."
+            },
+            status=status.HTTP_200_OK,
+        )
     
 class RegisterAPIView(APIView):
 
     def post(self, request):
 
-        serializer = RegisterSerializer(
-            data=request.data
-        )
+        serializer = RegisterSerializer(data=request.data)
 
-        serializer.is_valid(
-            raise_exception=True
-        )
+        serializer.is_valid(raise_exception=True)
 
         user = AuthService.register_user(
             email=serializer.validated_data["email"],
@@ -61,13 +80,9 @@ class LoginAPIView(APIView):
 
     def post(self, request):
 
-        serializer = LoginSerializer(
-            data=request.data,
-        )
+        serializer = LoginSerializer(data=request.data,)
 
-        serializer.is_valid(
-            raise_exception=True,
-        )
+        serializer.is_valid(raise_exception=True,)
 
         tokens = AuthService.login_user(
             email=serializer.validated_data["email"],
@@ -82,6 +97,28 @@ class LoginAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+        
+class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = LogoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        AuthService.logout(refresh_token=serializer.validated_data["refresh"])
+
+        return Response(
+            {"message": "Logged out successfully"},
+            status=status.HTTP_200_OK
+        )
+        
+class CurrentUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self,request):
+        serializer = CurrentUserSerializer(request.user)
+        
+        return Response(serializer.data)
         
 
         
