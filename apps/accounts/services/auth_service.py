@@ -1,4 +1,4 @@
-import email
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -10,15 +10,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 User = get_user_model()
 
 
+
 class AuthService:
     
     @staticmethod
     def login_user(*, email, password):
 
-        user = authenticate(
-            username=email,
-            password=password,
-        )
+        user = authenticate(username=email,password=password,)
 
         if user is None:
             raise ValueError("Invalid credentials.")
@@ -30,6 +28,12 @@ class AuthService:
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
+        
+        
+    @staticmethod
+    def logout(*, refresh_token: str) -> None:
+        token = RefreshToken(refresh_token)
+        token.blacklist()
 
     @staticmethod
     def generate_reset_token(user):
