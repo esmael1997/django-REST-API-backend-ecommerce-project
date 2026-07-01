@@ -1,15 +1,23 @@
-from django.urls import path
-from apps.accounts.api.views import PasswordResetRequestAPIView, PasswordResetConfirmAPIView,RegisterAPIView, LoginAPIView, LogoutAPIView,CurrentUserAPIView
-from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework_simplejwt.views import TokenObtainPairView
+from django.urls import include, path
+from apps.accounts.api.profile.urls import ProfileAPIView,ChangePasswordAPIView
+from apps.accounts.api.auth.urls import(
+    LoginAPIView,
+    LogoutAPIView,
+    CurrentUserAPIView,
+    RegisterAPIView,
+    PasswordResetConfirmAPIView,
+    PasswordResetRequestAPIView,
+    
+    ) 
 
 urlpatterns = [
-    path("password-reset/",PasswordResetRequestAPIView.as_view()),
-    path("password-reset-confirm/",PasswordResetConfirmAPIView.as_view(), name="password-reset-confirm"),
-    path("register/",RegisterAPIView.as_view()),
-    path("login/",LoginAPIView.as_view()),
-    path("refresh/",TokenRefreshView.as_view(),name="token_refresh",),
-    path("logout/", LogoutAPIView.as_view(), name="logout"),
-    path("me/", CurrentUserAPIView.as_view(), name="current-user"),
-   
+    path("profile/", ProfileAPIView.as_view()),
+    path("change-password/", ChangePasswordAPIView.as_view()),
+    path("Login/", LoginAPIView.as_view()),
+    path("Logout/", LogoutAPIView.as_view()),
+    path("CurrentUser/", CurrentUserAPIView.as_view()),
+    path("Register/", RegisterAPIView.as_view()),
+    path("PasswordResetConfirm/", PasswordResetConfirmAPIView.as_view()),
+    path("PasswordResetRequest/", PasswordResetRequestAPIView.as_view()),
+    
 ]
