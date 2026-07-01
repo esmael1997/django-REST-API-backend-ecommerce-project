@@ -1,2 +1,9 @@
-def get_current_user(user):
-    return user
+from apps.accounts.models import Profile
+
+
+def get_profile(*, user):
+    return Profile.objects.select_related("user").get(user=user)
+
+
+#def get_current_user(user):
+    #return user

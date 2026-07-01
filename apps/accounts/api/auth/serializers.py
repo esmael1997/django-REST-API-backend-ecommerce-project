@@ -4,11 +4,11 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from apps.accounts.models import User 
 
-
 User = get_user_model()
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
+    
 class PasswordResetConfirmSerializer(serializers.Serializer):
     uidb64 = serializers.CharField()
     token = serializers.CharField()
@@ -19,7 +19,6 @@ class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField()
     username = serializers.CharField(max_length=150)
     password = serializers.CharField(write_only=True,min_length=8,)
-
     password_confirm = serializers.CharField(write_only=True,min_length=8,)
 
     def validate_email(self, value):
@@ -68,5 +67,7 @@ class CurrentUserSerializer(serializers.ModelSerializer):
             "last_name",
             
         )
+        
+
 
         

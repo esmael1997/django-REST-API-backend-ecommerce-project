@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from apps.accounts.services.password_reset_service import create_password_reset
-from apps.accounts.api.serializers import (
+from apps.accounts.api.auth.serializers import (
     PasswordResetRequestSerializer,
     RegisterSerializer,
     LoginSerializer,
@@ -14,7 +14,7 @@ from apps.accounts.services.auth_service import AuthService
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
-from apps.accounts.api.serializers import CurrentUserSerializer
+from apps.accounts.api.auth.serializers import CurrentUserSerializer
 
 
 User = get_user_model()
